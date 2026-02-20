@@ -38,7 +38,8 @@ async def query_documents(request: QueryRequest):
         retrieved_chunks = retrieval_service.retrieve(
             query=request.query,
             top_k=initial_top_k,
-            use_hyde=request.enable_hyde
+            use_hyde=request.enable_hyde,
+            search_mode=request.search_mode
         )
 
         initial_retrieval_count = len(retrieved_chunks)
@@ -80,7 +81,11 @@ async def query_documents(request: QueryRequest):
         elif request.mode == "self_reflective":
             # Self-Reflective RAG
             def retrieval_fn(refined_query):
-                return retrieval_service.retrieve(refined_query, request.top_k)
+                return retrieval_service.retrieve(
+                    refined_query,
+                    request.top_k,
+                    search_mode=request.search_mode
+                )
             
             sr_result = self_reflective_service.execute_self_reflective(
                 request.query,
@@ -104,7 +109,11 @@ async def query_documents(request: QueryRequest):
             # CRAG-aware retrieval function: preserves web search if it was triggered
             def retrieval_fn(refined_query):
                 # Re-retrieve from vector store
-                new_chunks = retrieval_service.retrieve(refined_query, request.top_k)
+                new_chunks = retrieval_service.retrieve(
+                    refined_query,
+                    request.top_k,
+                    search_mode=request.search_mode
+                )
                 # Re-run CRAG evaluation on new chunks
                 new_crag_result = crag_service.execute_crag(refined_query, new_chunks)
                 # Return augmented chunks (preserves web search if triggered again)
@@ -128,6 +137,7 @@ async def query_documents(request: QueryRequest):
             query=request.query,
             answer=answer,
             mode=request.mode,
+            search_mode=request.search_mode,
             sources=retrieved_chunks,
             crag_details=crag_details,
             reflection_details=reflection_details,

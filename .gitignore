@@ -43,7 +43,7 @@ uv.lock
 
 # Uploads
 uploads/
-*.pdf
+#*.pdf
 !README.md
 *.txt
 *.json
@@ -61,12 +61,5 @@ Thumbs.db
 .coverage
 htmlcov/
 
-
-
-notebooks/*
-notebooks/langchain/*
-
-!workflows/*
-archived/*
-workflows/README.md
-.claude/*
+# Ignore the project_summary folder
+project_summary/

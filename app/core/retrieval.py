@@ -18,7 +18,8 @@ class RetrievalService:
         self,
         query: str,
         top_k: int = None,
-        use_hyde: bool = False
+        use_hyde: bool = False,
+        search_mode: str = "hybrid"
     ) -> list[RetrievedChunk]:
         """
         Retrieve relevant chunks for query with optional HYDE enhancement.
@@ -27,6 +28,7 @@ class RetrievalService:
             query: User's query
             top_k: Number of chunks to retrieve
             use_hyde: Whether to use HYDE for query expansion
+            search_mode: Search mode - "dense", "sparse", or "hybrid"
 
         Returns:
             List of retrieved chunks
@@ -45,10 +47,12 @@ class RetrievalService:
 
             # Run parallel searches for each hypothesis
             all_results = []
-            for vector in hypothesis_vectors:
+            for hypothesis, vector in zip(hypotheses, hypothesis_vectors):
                 results = self.vector_store.search(
                     query_vector=vector,
-                    top_k=top_k
+                    query_text=hypothesis,
+                    top_k=top_k,
+                    mode=search_mode
                 )
                 all_results.extend(results)
 
@@ -65,12 +69,14 @@ class RetrievalService:
             # Search vector store
             results = self.vector_store.search(
                 query_vector=query_vector,
-                top_k=top_k
+                query_text=query,
+                top_k=top_k,
+                mode=search_mode
             )
 
             # Convert to RetrievedChunk models
             retrieved_chunks = self._convert_to_chunks(results)
-            logger.info(f"Retrieved {len(retrieved_chunks)} chunks for query")
+            logger.info(f"Retrieved {len(retrieved_chunks)} chunks for query (mode: {search_mode})")
 
         return retrieved_chunks
 

@@ -8,6 +8,10 @@ from datetime import datetime
 class QueryRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=1000)
     mode: Literal["standard", "crag", "self_reflective", "both"] = "both"
+    search_mode: Literal["dense", "sparse", "hybrid"] = Field(
+        default="hybrid",
+        description="Search mode: dense (semantic), sparse (keyword), or hybrid (RRF fusion)"
+    )
     top_k: int = Field(default=5, ge=1, le=20)
     enable_hyde: bool = Field(
         default=False,
@@ -100,6 +104,7 @@ class QueryResponse(BaseModel):
     query: str
     answer: str
     mode: str
+    search_mode: Literal["dense", "sparse", "hybrid"]
     sources: list[RetrievedChunk]
     crag_details: Optional[CRAGResult] = None
     reflection_details: Optional[SelfReflectiveResult] = None

@@ -31,13 +31,18 @@ class Settings(BaseSettings):
     # Retrieval
     top_k_results: int = 5
 
+    # Hybrid Search Settings
+    hybrid_search_enabled: bool = True
+    sparse_vector_enabled: bool = True
+    rrf_k: int = 60  # RRF fusion parameter
+
     # HYDE Settings
     hyde_num_hypotheses: int = 3
     hyde_enabled_by_default: bool = False
 
     # Reranking Settings
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-    reranker_initial_top_k: int = 20
+    reranker_initial_top_k: int = 3
     reranking_enabled_by_default: bool = False
 
     # Reranking Backend Selection
