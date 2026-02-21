@@ -25,6 +25,12 @@ RUN touch uv.lock
 COPY uv.lock* ./
 RUN uv sync --no-dev --no-install-project
 
+# Debugging step: Verify uv command and uv.lock file
+RUN uv --version && cat uv.lock || echo "uv.lock file is missing or invalid"
+
+# Retry uv sync with additional logging
+RUN uv sync --no-dev --no-install-project || (echo "uv sync failed" && exit 1)
+
 # Pass 2 — install the project itself (invalidated only when source changes)
 COPY README.md ./
 COPY app/ ./app/
