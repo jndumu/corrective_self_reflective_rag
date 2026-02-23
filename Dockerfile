@@ -36,7 +36,6 @@ RUN uv run python -c "\
 from sentence_transformers import CrossEncoder; \
 CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
 
-
 # ============================================================
 # Stage 2: Runtime — lean image with only what is needed
 # ============================================================
