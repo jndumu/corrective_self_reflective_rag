@@ -6,12 +6,12 @@ global:
   application_name: crag-rag-app
   branch: null
   default_ec2_keyname: null
-  default_platform: Docker
+  default_platform: Docker running on 64bit Amazon Linux 2
   default_region: us-east-1
   include_git_submodules: true
   instance_profile: null
-  platform_name: null
-  platform_version: null
+  platform_name: Docker running on 64bit Amazon Linux 2
+  platform_version: null  # (or specify a version, e.g. "3.5.7" if you want)
   profile: null
   repository: null
   sc: git
