@@ -25,6 +25,15 @@ RUN touch uv.lock
 COPY uv.lock* ./
 RUN uv sync --no-dev --no-install-project
 
+# Debugging step: Print the contents of uv.lock
+RUN echo "Contents of uv.lock:" && cat uv.lock
+
+# Debugging step: Verify installed dependencies
+RUN echo "Installed dependencies:" && apt list --installed
+
+# Retry uv sync with additional logging
+RUN uv sync --no-dev --no-install-project || (echo "uv sync failed" && exit 1)
+
 # Pass 2 — install the project itself (invalidated only when source changes)
 COPY README.md ./
 COPY app/ ./app/
