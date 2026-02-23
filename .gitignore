@@ -64,7 +64,3 @@ htmlcov/
 # Ignore the project_summary folder
 project_summary/
 
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
