@@ -25,8 +25,11 @@ RUN touch uv.lock
 COPY uv.lock* ./
 RUN uv sync --no-dev --no-install-project
 
-# Debugging step: Verify uv command and uv.lock file
-RUN uv --version && cat uv.lock || echo "uv.lock file is missing or invalid"
+# Debugging step: Print the contents of uv.lock
+RUN echo "Contents of uv.lock:" && cat uv.lock
+
+# Debugging step: Verify installed dependencies
+RUN echo "Installed dependencies:" && apt list --installed
 
 # Retry uv sync with additional logging
 RUN uv sync --no-dev --no-install-project || (echo "uv sync failed" && exit 1)
