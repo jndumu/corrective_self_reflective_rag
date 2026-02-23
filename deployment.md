@@ -705,4 +705,4 @@ aws ecr delete-repository \
 | `app/config.py` | `pydantic-settings` — reads all config from environment variables |
 | `pyproject.toml` + `uv.lock` | Required in build context for `uv sync --frozen` |
 | `workflows/aws_eb_deployment.md` | Mermaid architecture and deployment flow diagrams |
->>>>>>> 3da47cc (Add AWS Elastic Beanstalk deployment guide)
+>>>>>>> 3da47cca6c9d18d98a402cb474de33d45c5e91b8
