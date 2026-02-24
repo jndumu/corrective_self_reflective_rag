@@ -1,3 +1,4 @@
+
 name: Deploy to AWS Elastic Beanstalk
 
 on:
@@ -7,8 +8,8 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: crag-rag-app
-  EB_APP_NAME: crag-rag-appp
-  EB_ENV_NAME: crag-ragg-prod
+  EB_APP_NAME: crag-rag-app
+  EB_ENV_NAME: crag-rag-pro
 
 jobs:
   deploy:
@@ -61,6 +62,7 @@ jobs:
             --version-label "$VERSION_LABEL" \
             --source-bundle "S3Bucket=${S3_BUCKET},S3Key=${EB_APP_NAME}/${VERSION_LABEL}.zip"
 
+          # Build option-settings JSON via Python to safely handle special characters in secrets
           python3 -c "
           import json, os
           ns = 'aws:elasticbeanstalk:application:environment'
@@ -69,29 +71,12 @@ jobs:
           print(json.dumps(settings))
           " > /tmp/eb-env-settings.json
 
-          ENV_EXISTS=$(aws elasticbeanstalk describe-environments \
-            --application-name "$EB_APP_NAME" \
-            --environment-names "$EB_ENV_NAME" \
-            --query 'Environments[0].Status' \
-            --output text)
+          aws elasticbeanstalk update-environment \
+            --environment-name "$EB_ENV_NAME" \
+            --version-label "$VERSION_LABEL" \
+            --option-settings file:///tmp/eb-env-settings.json
 
-          if [ "$ENV_EXISTS" == "None" ] || [ "$ENV_EXISTS" == "null" ]; then
-            echo "Environment does not exist. Creating..."
-            aws elasticbeanstalk create-environment \
-              --application-name "$EB_APP_NAME" \
-              --environment-name "$EB_ENV_NAME" \
-              --version-label "$VERSION_LABEL" \
-              --option-settings file:///tmp/eb-env-settings.json \
-              --solution-stack-name "64bit Amazon Linux 2 v3.5.10 running Docker" \
-              --tier Name="WebServer",Type="Standard",Version="1.0"
-          else
-            echo "Environment exists. Updating..."
-            aws elasticbeanstalk update-environment \
-              --environment-name "$EB_ENV_NAME" \
-              --version-label "$VERSION_LABEL" \
-              --option-settings file:///tmp/eb-env-settings.json
-          fi
-
+          # Poll until Ready — aws wait has a hardcoded ~6.5 min limit; EB deploys can take longer
           echo "Waiting for environment to reach Ready status (up to 20 min)..."
           for i in $(seq 1 40); do
             STATUS=$(aws elasticbeanstalk describe-environments \
